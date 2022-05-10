@@ -1,12 +1,14 @@
 package com.techreturners.bookmanager.service;
 
+import com.techreturners.bookmanager.exception.ResourceNotFoundException;
 import com.techreturners.bookmanager.model.Book;
 import com.techreturners.bookmanager.repository.BookManagerRepository;
+//import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookManagerServiceImpl implements BookManagerService {
@@ -28,6 +30,10 @@ public class BookManagerServiceImpl implements BookManagerService {
 
     @Override
     public Book getBookById(Long id) {
+
+        Book getBook = bookManagerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found for this id: " + id));
+
         return bookManagerRepository.findById(id).get();
     }
 
@@ -46,7 +52,11 @@ public class BookManagerServiceImpl implements BookManagerService {
 
     //Optional Task - User Story - Delete Book By Id Solution
     @Override
-    public void deleteBookById(Long id) {
+    public void deleteBookById(Long id) throws ResourceNotFoundException {
+
+        Book getBook = bookManagerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found for this id: " + id));
+
         bookManagerRepository.deleteById(id);
     }
 

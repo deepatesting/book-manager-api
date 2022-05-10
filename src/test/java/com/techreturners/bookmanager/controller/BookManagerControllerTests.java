@@ -109,4 +109,16 @@ public class BookManagerControllerTests {
         verify(mockBookManagerServiceImpl, times(1)).updateBookById(book.getId(), book);
     }
 
+    //User Story 5 - Delete Book By Id Solution
+    @Test
+    public void testDeleteMappingDeleteBookById() throws Exception {
+
+        mockBookManagerServiceImpl.deleteBookById(5L);
+
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.delete("/api/v1/book/5"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Book not found for this id: 5"));
+    }
+
 }
