@@ -53,4 +53,9 @@ to add in exception handling to the project?
 
 - Clue 2: What if someone wants to find a book by an ID that doesn't yet exist? 
   How can we improve the API by handling errors gracefully and show a helpful message to the client?
-  
+
+### Solution for Delete Book by ID
+Task 1:
+- Delete a Book if exists
+- Throw exception when the book does not exist.
+- Added respective test code in controller.
