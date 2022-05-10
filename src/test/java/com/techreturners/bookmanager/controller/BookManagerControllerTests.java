@@ -1,6 +1,7 @@
 package com.techreturners.bookmanager.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.techreturners.bookmanager.exception.ResourceNotFoundException;
 import com.techreturners.bookmanager.model.Book;
 import com.techreturners.bookmanager.model.Genre;
 import com.techreturners.bookmanager.service.BookManagerServiceImpl;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -111,14 +113,31 @@ public class BookManagerControllerTests {
 
     //User Story 5 - Delete Book By Id Solution
     @Test
-    public void testDeleteMappingDeleteBookById() throws Exception {
+    public void testDeleteMappingDeleteBookByIdNotExists() throws Exception {
+        Long Id = 5L;
 
-        mockBookManagerServiceImpl.deleteBookById(5L);
+        doThrow(ResourceNotFoundException.class)
+                .when(mockBookManagerServiceImpl)
+                .deleteBookById(Id);
+
+        //mockBookManagerServiceImpl.deleteBookById(Id);
 
         this.mockMvcController.perform(
-                        MockMvcRequestBuilders.delete("/api/v1/book/5"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Book not found for this id: 5"));
+                        MockMvcRequestBuilders.delete("/api/v1/book/" + Id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                //.andExpect(MockMvcResultMatchers.content().string(Id+""));
+                //.andExpect(MockMvcResultMatchers.jsonPath("$.errors").value("Book not found for this id: 5"));
     }
 
+    @Test
+    public void testDeleteMappingDeleteBookByIdExists() throws Exception {
+        Long Id = 5L;
+
+        mockBookManagerServiceImpl.deleteBookById(Id);
+
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.delete("/api/v1/book/" + Id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Successfully deleted book id: " + Id));
+    }
 }
