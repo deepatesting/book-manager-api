@@ -3,10 +3,12 @@ package com.techreturners.bookmanager.controller;
 import com.techreturners.bookmanager.model.Book;
 import com.techreturners.bookmanager.service.BookManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -47,7 +49,11 @@ public class BookManagerController {
     //Optional Task - User Story - Delete Book By Id Solution
     @DeleteMapping({"/{bookId}"})
     public ResponseEntity<String> deleteBookById(@PathVariable Long bookId) {
-        bookManagerService.deleteBookById(bookId);
+        try {
+            bookManagerService.deleteBookById(bookId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found", e);
+        }
         return new ResponseEntity<>("Successfully deleted book id: "+bookId, HttpStatus.OK);
     }
 }
